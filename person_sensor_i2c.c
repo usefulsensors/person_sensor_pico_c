@@ -23,7 +23,8 @@
 // The I2C address of the person sensor board.
 const uint8_t PERIPHERAL_ADDRESS = 0x62;
 
-// Configuration commands for the sensor.
+// Configuration commands for the sensor. Write this as a byte to the I2C bus
+// followed by a second byte as an argument value.
 const uint8_t REG_MODE = 0x01;
 const uint8_t REG_SINGLE_SHOT = 0x02;
 const uint8_t REG_ENABLE_ID = 0x03;
@@ -32,12 +33,10 @@ const uint8_t REG_ENABLE_SMOOTHING = 0x05;
 
 // This is the structure of the packet returned over the wire from the sensor
 // when we do an I2C read from the peripheral address. The C standard doesn't
-// guarantee the byte-wise layout of this struct across different platforms,
-// for example padding could be inserted between members, but we know from
-// experimentation that this doesn't happen on the Pico. This allows us to do a
-// direct copy from the wire representation into a struct variable, but your
-// mileage may vary on other boards.
-typedef struct {
+// guarantee the byte-wise layout of a regular struct across different
+// platforms, so we add the non-standard (but widely supported) __packed__
+// attribute to ensure the layout is the same as the wire representation.
+typedef struct __attribute__ ((__packed__)) {
   float confidence;     // Bytes 0 to 3
   float id_confidence;  // Bytes 4 to 7
   uint8_t x1;           // Byte 8
