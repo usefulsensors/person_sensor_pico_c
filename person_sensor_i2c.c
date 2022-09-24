@@ -23,6 +23,14 @@
 // The I2C address of the person sensor board.
 const uint8_t PERIPHERAL_ADDRESS = 0x62;
 
+// Speed of the I2C bus. The sensor supports many rates but 400KHz works.
+const int32_t I2C_BAUD_RATE = (400 * 1000);
+
+// How long to wait between reading the sensor. The sensor can be read as
+// frequently as you like, but the results only change at about 5FPS, so
+// waiting for 200ms is reasonable.
+const int32_t SAMPLE_DELAY_MS = 200;
+
 // Configuration commands for the sensor. Write this as a byte to the I2C bus
 // followed by a second byte as an argument value.
 const uint8_t REG_MODE = 0x01;
@@ -48,16 +56,16 @@ typedef struct __attribute__ ((__packed__)) {
 
 int main() {
     stdio_init_all();
-    //setup_default_uart();
 
 #if !defined(i2c_default) || !defined(PICO_DEFAULT_I2C_SDA_PIN) || !defined(PICO_DEFAULT_I2C_SCL_PIN)
-#warning i2c/mcp9808_i2c example requires a board with I2C pins
-    puts("Default I2C pins were not defined");
-#else
+#warning This example requires a board with I2C pins
+    printf("Default I2C pins were not defined\n");
+    return 1;
+#endif
     printf("Setting up i2c\n");
 
     // This example will use I2C0 on the default SDA and SCL pins (4, 5 on a Pico)
-    i2c_init(i2c_default, 400 * 1000);
+    i2c_init(i2c_default, I2C_BAUD_RATE);
     gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
@@ -68,15 +76,30 @@ int main() {
     printf("setup done\n");
     
     inference_results_t results;
-    
     while (1) {
         // Perform a read action on the I2C address of the sensor to get the
         // current face information detected.
-        i2c_read_blocking(i2c_default, PERIPHERAL_ADDRESS, (uint8_t*)(&results), sizeof(inference_results_t), false);
+        int num_bytes_read = i2c_read_blocking(
+            i2c_default,
+            PERIPHERAL_ADDRESS, 
+            (uint8_t*)(&results), 
+            sizeof(inference_results_t), 
+            false);
+        // If there's no result from the sensor, don't print anything after the
+        // first time.
+        if (num_bytes_read != sizeof(inference_results_t)) {
+            printf("No person sensor results found on the i2c bus\n");
+            sleep_ms(SAMPLE_DELAY_MS);
+            continue;
+        }
 
-        printf("conf %f\% bbox [%d %d %d %d], id conf %f\% id %d\n", results.confidence, results.x1, results.y1, results.x2, results.y2, results.id_confidence, results.identity);
+        printf("%d - conf %f\% bbox [%d %d %d %d], id conf %f\% id %d\n", 
+            num_bytes_read,
+            results.confidence, 
+            results.x1, results.y1, results.x2, results.y2, 
+            results.id_confidence, results.identity);
 
-        sleep_ms(200);
+        sleep_ms(SAMPLE_DELAY_MS);
     }
-#endif
+    return 0;
 }
