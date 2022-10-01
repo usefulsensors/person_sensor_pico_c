@@ -50,6 +50,9 @@ Follow the wiring scheme shown below:
 
 ![Wiring diagram for Person Sensor/Pico](pico_person_sensor_bb.png)
 
+If you're using [Qwiic connectors](https://www.sparkfun.com/qwiic), the colors 
+will be black for GND, red for 3.3V, blue for SDA, and yellow for SDC.
+
 ## Running
 
 Once you have the sensor wired up, connect the Pico over USB while holding the
