@@ -60,6 +60,9 @@ bool reserved_addr(uint8_t addr) {
     return (addr & 0x78) == 0 || (addr & 0x78) == 0x78;
 }
 
+// Call this function from the main loop below to see what peripherals are
+// available on the I2C bus, if you're having problems communicating with the
+// person sensor.
 void scan_i2c_bus() {
   for (int addr = 0; addr < (1 << 7); ++addr) {
     if (addr % 16 == 0) {
@@ -88,11 +91,6 @@ void scan_i2c_bus() {
 int main() {
     stdio_init_all();
 
-#if !defined(i2c_default) || !defined(PICO_DEFAULT_I2C_SDA_PIN) || !defined(PICO_DEFAULT_I2C_SCL_PIN)
-#warning This example requires a board with I2C pins
-    printf("Default I2C pins were not defined\n");
-    return 1;
-#endif
     printf("Setting up i2c\n");
 
     // This example will use I2C0 on the default SDA and SCL pins (4, 5 on a Pico)
@@ -120,7 +118,6 @@ int main() {
         // first time.
         if (num_bytes_read != sizeof(inference_results_t)) {
             printf("No person sensor results found on the i2c bus\n");
-            scan_i2c_bus();
             sleep_ms(SAMPLE_DELAY_MS);
             continue;
         }

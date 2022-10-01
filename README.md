@@ -46,9 +46,9 @@ the right pins.
 
 Wiring up the device requires 4 jumpers, to connect VDD, GND, SDA and SCL. The example here uses I2C port 0, which is assigned to GPIO 4 (SDA) and 5 (SCL) in software. Power is supplied from the VSYS pin.
 
-Follow the same wiring scheme as the MCP9808 shown below:
+Follow the wiring scheme shown below:
 
-![Wiring diagram for Person Sensor/Pico](mcp9808_i2c.png)
+![Wiring diagram for Person Sensor/Pico](pico_person_sensor_bb.png)
 
 ## Running
 
