@@ -54,6 +54,37 @@ typedef struct __attribute__ ((__packed__)) {
   int8_t identity;      // Byte 12
 } inference_results_t;
 
+// I2C reserves some addresses for special purposes. We exclude these from the scan.
+// These are any addresses of the form 000 0xxx or 111 1xxx
+bool reserved_addr(uint8_t addr) {
+    return (addr & 0x78) == 0 || (addr & 0x78) == 0x78;
+}
+
+void scan_i2c_bus() {
+  for (int addr = 0; addr < (1 << 7); ++addr) {
+    if (addr % 16 == 0) {
+      printf("%02x ", addr);
+    }
+
+    // Perform a 1-byte dummy read from the probe address. If a slave
+    // acknowledges this address, the function returns the number of bytes
+    // transferred. If the address byte is ignored, the function returns
+    // -1.
+
+    // Skip over any reserved addresses.
+    int ret;
+    uint8_t rxdata;
+    if (reserved_addr(addr)) {
+      ret = PICO_ERROR_GENERIC;
+    } else {
+      ret = i2c_read_blocking(i2c_default, addr, &rxdata, 1, false);
+    }
+    printf(ret < 0 ? "." : "@");
+    printf(addr % 16 == 15 ? "\n" : "  ");
+  }
+  printf("Done.\n");
+}
+
 int main() {
     stdio_init_all();
 
@@ -70,11 +101,11 @@ int main() {
     gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
     gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
-    // Make the I2C pins available to picotool
+    // Make the I2C pins available to picotool.
     bi_decl(bi_2pins_with_func(PICO_DEFAULT_I2C_SDA_PIN, PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C));
 
-    printf("setup done\n");
-    
+    printf("Setup done for i2c\n");
+
     inference_results_t results;
     while (1) {
         // Perform a read action on the I2C address of the sensor to get the
@@ -89,12 +120,12 @@ int main() {
         // first time.
         if (num_bytes_read != sizeof(inference_results_t)) {
             printf("No person sensor results found on the i2c bus\n");
+            scan_i2c_bus();
             sleep_ms(SAMPLE_DELAY_MS);
             continue;
         }
 
-        printf("%d - conf %f\% bbox [%d %d %d %d], id conf %f\% id %d\n", 
-            num_bytes_read,
+        printf("Face confidence %f\% bbox [%d %d %d %d], id conf %f\% id %d\n", 
             results.confidence, 
             results.x1, results.y1, results.x2, results.y2, 
             results.id_confidence, results.identity);
