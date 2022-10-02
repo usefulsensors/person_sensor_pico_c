@@ -44,7 +44,10 @@ the right pins.
 
 ## Wiring information
 
-Wiring up the device requires 4 jumpers, to connect VDD, GND, SDA and SCL. The example here uses I2C port 0, which is assigned to GPIO 4 (SDA) and 5 (SCL) in software. Power is supplied from the VSYS pin.
+Wiring up the device requires 4 jumpers, to connect VDD, GND, SDA and SCL. The 
+example here uses I2C port 0, which is assigned to GPIO4 (SDA, pin 6) and GPIO5
+(SCL, pin 7) in software. Power is supplied from 3V3(OUT) (pin 36), with ground
+attached to GND (pin 38).
 
 Follow the wiring scheme shown below:
 
