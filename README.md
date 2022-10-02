@@ -12,7 +12,7 @@ computer vision to spot faces.
 
 There's a [detailed developer guide](https://usfl.ink/ps_dev)
 available, but this project has sample code that shows you specifically how to 
-get the sensor up and running with a Raspberry Pi Pico.
+get the sensor up and running with a Raspberry Pi Pico using C.
 
 ## Building
 
