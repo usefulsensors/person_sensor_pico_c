@@ -20,14 +20,14 @@ add_compile_options(-Wall
         -Wno-maybe-uninitialized
         )
 
-add_executable(person_sensor_i2c
-        person_sensor_i2c.c
+add_executable(face_detection_example
+        face_detection_example.c
         )
 
 # pull in common dependencies and additional i2c hardware support
-target_link_libraries(person_sensor_i2c pico_stdlib hardware_i2c)
+target_link_libraries(face_detection_example pico_stdlib hardware_i2c)
 
 # create map/bin/hex file etc.
-pico_add_extra_outputs(person_sensor_i2c)
+pico_add_extra_outputs(face_detection_example)
 
-pico_enable_stdio_usb(person_sensor_i2c 1)
+pico_enable_stdio_usb(face_detection_example 1)
