@@ -23,11 +23,13 @@ add_compile_options(-Wall
 add_executable(face_detection_example
         face_detection_example.c
         )
-
-# pull in common dependencies and additional i2c hardware support
 target_link_libraries(face_detection_example pico_stdlib hardware_i2c)
-
-# create map/bin/hex file etc.
 pico_add_extra_outputs(face_detection_example)
-
 pico_enable_stdio_usb(face_detection_example 1)
+
+add_executable(scan_i2c
+        scan_i2c.c
+        )
+target_link_libraries(scan_i2c pico_stdlib hardware_i2c)
+pico_add_extra_outputs(scan_i2c)
+pico_enable_stdio_usb(scan_i2c 1)

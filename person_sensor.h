@@ -1,6 +1,12 @@
 #ifndef INCLUDE_PERSON_SENSOR_H
 #define INCLUDE_PERSON_SENSOR_H
 
+// Definitions for the Useful Sensors Person Sensor module.
+// Includes the standard I2C address of the sensor, constants for the
+// configuration commands, and the data structures used to communicate results
+// to the main system.
+// See the full developer guide at https://usfl.ink/ps_dev for more information.
+
 #include <stdint.h>
 
 // The I2C address of the person sensor board.

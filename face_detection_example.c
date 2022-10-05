@@ -26,39 +26,6 @@ const int32_t I2C_BAUD_RATE = (400 * 1000);
 // waiting for 200ms is reasonable.
 const int32_t SAMPLE_DELAY_MS = 200;
 
-// I2C reserves some addresses for special purposes. We exclude these from the scan.
-// These are any addresses of the form 000 0xxx or 111 1xxx
-bool reserved_addr(uint8_t addr) {
-    return (addr & 0x78) == 0 || (addr & 0x78) == 0x78;
-}
-
-// Call this function from the main loop below to see what peripherals are
-// available on the I2C bus, if you're having problems communicating with the
-// person sensor.
-void scan_i2c_bus() {
-  for (int addr = 0; addr < (1 << 7); ++addr) {
-    if (addr % 16 == 0) {
-      printf("%02x ", addr);
-    }
-
-    // Perform a 1-byte dummy read from the probe address. If a peripheral
-    // acknowledges this address, the function returns the number of bytes
-    // transferred. If the address byte is ignored, the function returns -1.
-
-    // Skip over any reserved addresses.
-    int ret;
-    uint8_t rxdata;
-    if (reserved_addr(addr)) {
-      ret = PICO_ERROR_GENERIC;
-    } else {
-      ret = i2c_read_blocking(i2c_default, addr, &rxdata, 1, false);
-    }
-    printf(ret < 0 ? "." : "@");
-    printf(addr % 16 == 15 ? "\n" : "  ");
-  }
-  printf("Done.\n");
-}
-
 int main() {
     stdio_init_all();
 
