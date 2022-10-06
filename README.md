@@ -38,9 +38,9 @@ After that succeeds, you should be able to run the compilation stage:
 make
 ```
 
-There should now be a binary at `build/person_sensor_i2c.utf2`. You can install
-this on your Pico board, though it won't work until you wire up the sensor to
-the right pins.
+There should now be a binary at `build/face_detection_example.utf2`. You can
+install this on your Pico board, though it won't work until you wire up the
+sensor to the right pins.
 
 ## Wiring information
 
@@ -59,7 +59,45 @@ will be black for GND, red for 3.3V, blue for SDA, and yellow for SDC.
 ## Running
 
 Once you have the sensor wired up, connect the Pico over USB while holding the
-`bootsel` button to mount it as a storage device, copy the UTF2 file over to it,
-and it should begin running. To see the logging output you'll need to set up
-`minicom` or a similar tool, and you should start to see information about the
-faces it spots, or error messages.
+`bootsel` button to mount it as a storage device, copy the 
+`face_detection_example.utf2` file over to it, and it should begin running. To 
+see the logging output you'll need to set up `minicom` or a similar tool. Once
+that is done, you should start to see information about the faces it spots, or
+error messages.
+
+## Troubleshooting
+
+### Power
+
+The first thing to check is that the sensor is receiving power through the
+`VDD` and `GND` wires. The simplest way to test this is to hold the sensor
+upright (so the I2C connector is at the top) and point it at your face. You
+should see a green LED light up. If you don't see any response from the LED then
+it's likely the sensor isn't receiving power, so check those wires are set up
+correctly.
+
+### Communication
+
+If you see connection errors when running the face detection example, you may
+have an issue with your wiring. To help track down what's going wrong, you can
+copy over the `scan_i2c.utf2` file to the board, and this will display which
+I2C devices are available in the logs. Here's an example from a board that's set
+up correctly:
+
+```
+00 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .                       
+10 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .                       
+20 .  .  .  .  @  .  .  .  .  .  .  .  .  .  .  .                       
+30 .  .  .  .  .  .  .  .  .  @  .  .  .  .  .  .                       
+40 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  @                       
+50 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .                       
+60 .  .  @  .  .  .  .  .  @  .  .  .  .  .  .  .                       
+70 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+```
+
+The important entry is the first `@` shown on line starting with `60`. This
+indicates that there's a response on the address `0x62`, which is the fixed
+location of the person sensor. If the `@` isn't present at this point in the
+grid then it means the sensor isn't responding to I2C messages as it should be.
+The most likely cause is that there's a wiring problem, so if you hit this you
+should double-check that the SDA and SCL wires are going to the right pins.

@@ -1,12 +1,9 @@
 // Copyright (c) 2022 Useful Sensors Inc.
 // SPDX-License-Identifier: Apache-2.0
 //
-// Example code to communicate with a Useful Sensors' Person Sensor.
-// See the full developer guide at https://usfl.ink/ps_dev for more information.
-//   
-// Demonstrates how to set up and receive information from a person sensor. 
-// Canonical home for this code is at 
-// https://github.com/usefulsensors/useful_pico_person_sensor
+// Scans the I2C bus and shows what addresses are found.
+// This can be helpful if you're trying to debug connection problems with your
+// sensor.
 
 #include <stdio.h>
 #include <string.h>
