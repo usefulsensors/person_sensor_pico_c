@@ -1,7 +1,7 @@
-# How to attach the Useful Sensors' Person Sensor to a Pico via I2C
+# Using a Person Sensor on a Raspberry Pi Pico
 
 Example code that shows how to interface the Raspberry Pi Pico to the person 
-sensor board. 
+sensor board over I2C.
 
 ## Introduction
 
