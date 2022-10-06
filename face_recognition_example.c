@@ -4,7 +4,7 @@
 // Example code to communicate with a Useful Sensors' Person Sensor.
 // See the full developer guide at https://usfl.ink/ps_dev for more information.
 //   
-// Demonstrates how to set up and receive information from a person sensor. 
+// Demonstrates how to use the Person Sensor for face recognition. 
 // Canonical home for this code is at 
 // https://github.com/usefulsensors/useful_pico_person_sensor
 
@@ -63,10 +63,12 @@ int main() {
         printf("%d faces found\n", results.num_faces);
         for (int i = 0; i < results.num_faces; ++i) {
             const person_sensor_face_t* face = &results.faces[i];
-            printf("Face #%d: %d confidence, (%d, %d), %dx%d, %s\n",
-              i, face->box_confidence, face->box_left, face->box_top,
-              face->box_width, face->box_height, 
-              face->is_facing ? "facing" : "not facing");
+            if (face->id_confidence > 0) {
+                printf("Recognized face %d as person %d with confidence %d\n", 
+                    i, face->id, face->id_confidence);
+            } else {
+                printf("Unrecognized face %d\n", i);
+            }
         }
 
         sleep_ms(SAMPLE_DELAY_MS);

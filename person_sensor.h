@@ -54,7 +54,7 @@ typedef struct __attribute__ ((__packed__)) {
     uint8_t box_top;          // Byte 3.
     uint8_t box_width;        // Byte 4.
     uint8_t box_height;       // Byte 5.
-    uint8_t id_confidence;    // Byte 6.
+    int8_t id_confidence;    // Byte 6.
     int8_t id;                // Byte 7
     uint8_t is_facing;        // Byte 8.
 } person_sensor_face_t;

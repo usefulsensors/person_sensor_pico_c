@@ -33,3 +33,10 @@ add_executable(scan_i2c
 target_link_libraries(scan_i2c pico_stdlib hardware_i2c)
 pico_add_extra_outputs(scan_i2c)
 pico_enable_stdio_usb(scan_i2c 1)
+
+add_executable(face_recognition_example
+        face_recognition_example.c
+        )
+target_link_libraries(face_recognition_example pico_stdlib hardware_i2c)
+pico_add_extra_outputs(face_recognition_example)
+pico_enable_stdio_usb(face_recognition_example 1)
