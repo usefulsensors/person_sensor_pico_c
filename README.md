@@ -1,7 +1,8 @@
 # Using a Person Sensor on a Raspberry Pi Pico
 
-Example code that shows how to interface the Raspberry Pi Pico to the person 
-sensor board over I2C.
+Example code that shows how to interface the Raspberry Pi Pico to [Useful 
+Sensor's](https://usefulsensors.com) Person 
+Sensor board over I2C.
 
 ## Introduction
 
