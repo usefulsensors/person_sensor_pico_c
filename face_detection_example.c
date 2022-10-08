@@ -43,17 +43,11 @@ int main() {
 
     printf("Setup done for i2c\n");
 
-    person_sensor_results_t results;
+    person_sensor_results_t results = {};
     while (1) {
         // Perform a read action on the I2C address of the sensor to get the
         // current face information detected.
-        int num_bytes_read = i2c_read_blocking(
-            i2c_default,
-            PERSON_SENSOR_I2C_ADDRESS, 
-            (uint8_t*)(&results), 
-            sizeof(person_sensor_results_t), 
-            false);
-        if (num_bytes_read != sizeof(person_sensor_results_t)) {
+        if (!person_sensor_read(&results)) {
             printf("No person sensor results found on the i2c bus\n");
             sleep_ms(SAMPLE_DELAY_MS);
             continue;

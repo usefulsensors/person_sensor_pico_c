@@ -19,12 +19,12 @@
 #include "person_sensor.h"
 
 // Speed of the I2C bus. The sensor supports many rates but 400KHz works.
-const int32_t I2C_BAUD_RATE = (400 * 1000);
+#define I2C_BAUD_RATE (400 * 1000)
 
 // How long to wait between reading the sensor. The sensor can be read as
 // frequently as you like, but the results only change at about 5FPS, so
 // waiting for 200ms is reasonable.
-const int32_t SAMPLE_DELAY_MS = 200;
+#define SAMPLE_DELAY_MS (200)
 
 int main() {
     stdio_init_all();
@@ -43,17 +43,20 @@ int main() {
 
     printf("Setup done for i2c\n");
 
-    person_sensor_results_t results;
+    // We look for a single unrecognized face visible for at least five frames
+    // to add new recognition IDs. The calibration process takes about four
+    // seconds.
+    const int unrecognized_threshold = 5;
+    int unrecognized_frame_count = 0;
+    int next_unused_id = 1;
+    const int calibration_threshold = 20;
+    int calibration_frame_count = 0;
+
     while (1) {
         // Perform a read action on the I2C address of the sensor to get the
         // current face information detected.
-        int num_bytes_read = i2c_read_blocking(
-            i2c_default,
-            PERSON_SENSOR_I2C_ADDRESS, 
-            (uint8_t*)(&results), 
-            sizeof(person_sensor_results_t), 
-            false);
-        if (num_bytes_read != sizeof(person_sensor_results_t)) {
+        person_sensor_results_t results = {};
+        if (!person_sensor_read(&results)) {
             printf("No person sensor results found on the i2c bus\n");
             sleep_ms(SAMPLE_DELAY_MS);
             continue;
@@ -69,6 +72,33 @@ int main() {
             } else {
                 printf("Unrecognized face %d\n", i);
             }
+        }
+
+        if (calibration_frame_count > 0) {
+            // Let the sensor handle calibration for a few seconds if it has
+            // been started.
+            calibration_frame_count -= 1;
+            if (calibration_frame_count == 0) {
+                printf("Done calibrating\n");
+            }
+        } else if ((results.num_faces == 1) &&
+            (results.faces[0].box_confidence >= 95) &&
+            (results.faces[0].id_confidence <= 0) &&
+            (results.faces[0].is_facing == 1) &&
+            (next_unused_id < PERSON_SENSOR_MAX_IDS_COUNT))
+        {
+            // If we have an unrecognized face for a long enough time, start
+            // the calibration process.
+            unrecognized_frame_count += 1;
+            if (unrecognized_frame_count >= unrecognized_threshold) {
+                printf("Calibrating");
+                person_sensor_write_reg(
+                    PERSON_SENSOR_REG_CALIBRATE_ID, next_unused_id);
+                calibration_frame_count = calibration_threshold;
+                next_unused_id += 1;
+            }
+        } else {
+            unrecognized_frame_count = 0;
         }
 
         sleep_ms(SAMPLE_DELAY_MS);
