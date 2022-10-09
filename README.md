@@ -57,14 +57,23 @@ Follow the wiring scheme shown below:
 If you're using [Qwiic connectors](https://www.sparkfun.com/qwiic), the colors 
 will be black for GND, red for 3.3V, blue for SDA, and yellow for SDC.
 
-## Running
+## Running Face Detection
 
 Once you have the sensor wired up, connect the Pico over USB while holding the
 `bootsel` button to mount it as a storage device, copy the 
 `face_detection_example.utf2` file over to it, and it should begin running. To 
 see the logging output you'll need to set up `minicom` or a similar tool. Once
 that is done, you should start to see information about the faces it spots, or
-error messages.
+error messages. If you hold the sensor so that it's pointing at your own face
+you should see output like this:
+```
+********
+1 faces found
+Face #0: 99 confidence, (68, 71), 136x193, facing      
+```
+This shows that the sensor has found one face, with a 136 by 193 bounding box,
+with the top-left corner at 68, 71, and the head is pointing directly towards
+the sensor.
 
 ## Troubleshooting
 
@@ -102,3 +111,53 @@ location of the person sensor. If the `@` isn't present at this point in the
 grid then it means the sensor isn't responding to I2C messages as it should be.
 The most likely cause is that there's a wiring problem, so if you hit this you
 should double-check that the SDA and SCL wires are going to the right pins.
+
+## Running Face Recognition
+
+As well as detecting the locations of faces, the sensor is also capable of
+recognizing people's identities. This requires code that's a bit more involved
+than simple detection, and you can find the example program in
+[`face_recognition_example.c`](https://github.com/usefulsensors/person_sensor_pico/blob/main/face_recognition_example.c).
+To try it out, build the project and copy over `face_recognition_example.utf2`
+to the board. If you hold the sensor up to your own face you should initially
+see output like this:
+```
+********                                                                         
+1 faces found                                                                           
+Unrecognized face 0 
+```
+
+If you hold the sensor in place for a few seconds, you should see a log message
+saying `Calibrating`, followed by `Done calibrating`. You should now have
+taught the sensor to recognize your own face, and the output should change to
+something like:
+```
+********
+1 faces found
+Recognized face 0 as person 1 with confidence 99
+```
+If you now go through the same procedure with another face (finding a
+celebrity's face on a web page will do if you don't have a volunteer handy) you
+should start to see that person recognized as person #2 when you point the
+sensor back at it after calibration.
+
+This recognition algorithm is not accurate enough to be used for security
+applications like unlocking a device, but we're hoping it will be useful for
+projects that need to personalize their interface for particular people. One
+to thing to watch out for is the confidence value, you need to have it in the
+90's to have a reasonable expectation that a match has been found.
+
+## Writing your own Applications
+
+Hopefully the example code shown here should give you a good starting point for
+using the sensor in your own projects, but you can see more details about the
+interface in [`person_sensor.h`](https://github.com/usefulsensors/person_sensor_pico/blob/main/person_sensor.h).
+This header contains the data structures used to return information from the
+peripheral, and functions to read and configure the device.
+If you are trying to port this code to a different board, you can check the
+[developer guide](https://usfl.ink/ps_dev) to see if there's already support for
+your platform, and if not, the main differences are likely to be in the I2C
+initialization, reading, and writing implementations. If you can find examples
+of how to do the I2C bus setup on the new board, and then equivalents to the
+`i2c_read_blocking` and `i2c_write_blocking` functions, you should be able to
+reuse the rest of the data structures and logic.

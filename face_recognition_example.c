@@ -83,7 +83,7 @@ int main() {
             }
         } else if ((results.num_faces == 1) &&
             (results.faces[0].box_confidence >= 95) &&
-            (results.faces[0].id_confidence <= 0) &&
+            (results.faces[0].id_confidence <= 90) &&
             (results.faces[0].is_facing == 1) &&
             (next_unused_id < PERSON_SENSOR_MAX_IDS_COUNT))
         {
@@ -91,7 +91,7 @@ int main() {
             // the calibration process.
             unrecognized_frame_count += 1;
             if (unrecognized_frame_count >= unrecognized_threshold) {
-                printf("Calibrating");
+                printf("Calibrating\n");
                 person_sensor_write_reg(
                     PERSON_SENSOR_REG_CALIBRATE_ID, next_unused_id);
                 calibration_frame_count = calibration_threshold;
