@@ -98,5 +98,4 @@ inline void person_sensor_write_reg(uint8_t reg, uint8_t value) {
         false);
 }
 
-
 #endif  // INCLUDE_PERSON_SENSOR_H
