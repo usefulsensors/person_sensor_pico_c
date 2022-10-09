@@ -117,7 +117,7 @@ should double-check that the SDA and SCL wires are going to the right pins.
 As well as detecting the locations of faces, the sensor is also capable of
 recognizing people's identities. This requires code that's a bit more involved
 than simple detection, and you can find the example program in
-[`face_recognition_example.c`](https://github.com/usefulsensors/person_sensor_pico/blob/main/face_recognition_example.c).
+[`face_recognition_example.c`](https://github.com/usefulsensors/person_sensor_pico_c/blob/main/face_recognition_example.c).
 To try it out, build the project and copy over `face_recognition_example.utf2`
 to the board. If you hold the sensor up to your own face you should initially
 see output like this:
@@ -151,7 +151,7 @@ to thing to watch out for is the confidence value, you need to have it in the
 
 Hopefully the example code shown here should give you a good starting point for
 using the sensor in your own projects, but you can see more details about the
-interface in [`person_sensor.h`](https://github.com/usefulsensors/person_sensor_pico/blob/main/person_sensor.h).
+interface in [`person_sensor.h`](https://github.com/usefulsensors/person_sensor_pico_c/blob/main/person_sensor.h).
 This header contains the data structures used to return information from the
 peripheral, and functions to read and configure the device.
 If you are trying to port this code to a different board, you can check the
