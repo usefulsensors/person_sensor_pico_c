@@ -43,7 +43,7 @@ There should now be a binary at `build/face_detection_example.utf2`. You can
 install this on your Pico board, though it won't work until you wire up the
 sensor to the right pins.
 
-## Wiring information
+## Wiring Information
 
 Wiring up the device requires 4 jumpers, to connect VDD, GND, SDA and SCL. The 
 example here uses I2C port 0, which is assigned to GPIO4 (SDA, pin 6) and GPIO5
