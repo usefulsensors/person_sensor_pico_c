@@ -57,9 +57,9 @@ int main() {
         printf("%d faces found\n", results.num_faces);
         for (int i = 0; i < results.num_faces; ++i) {
             const person_sensor_face_t* face = &results.faces[i];
-            printf("Face #%d: %d confidence, (%d, %d), %dx%d, %s\n",
+            printf("Face #%d: %d confidence, (%d, %d), (%d, %d), %s\n",
               i, face->box_confidence, face->box_left, face->box_top,
-              face->box_width, face->box_height, 
+              face->box_right, face->box_bottom, 
               face->is_facing ? "facing" : "not facing");
         }
 
